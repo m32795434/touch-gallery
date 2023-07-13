@@ -17,6 +17,7 @@
   padding: 2rem;
 
   & img {
+    cursor: pointer;
     width: 100%;
     object-fit: cover;
     border: 1px solid black;
@@ -41,6 +42,7 @@
 
 
   & .modalInner {
+    cursor: pointer;
     border-radius: 4px;
     background: white;
     box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.05);
@@ -63,9 +65,15 @@
 
 
       & img {
+
+        // pointer-events: none;
         height: auto;
         width: 100%;
+
         // object-fit: contain;
+        &::selection {
+          background-color: transparent;
+        }
       }
 
       & figcaption {
@@ -75,6 +83,10 @@
           color: black;
         }
       }
+    }
+
+    & svg {
+      pointer-events: none;
     }
   }
 }

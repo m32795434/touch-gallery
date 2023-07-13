@@ -10,6 +10,8 @@ class Gallery {
     this.prevButton = document.querySelector('.prev');
     this.nextButton = document.querySelector('.next');
     this.currentImg;
+    this.startX;
+    this.currentX;
 
     this.images.forEach((img) => {
       img.addEventListener('click', (e) => {
@@ -21,10 +23,30 @@ class Gallery {
         }
       });
     });
+
+    this.modal.addEventListener('mousedown', (e) => {
+      this.startX = e.pageX;
+      this.modal.addEventListener('mousemove', this.handleMouseMove);
+    });
+
+    this.modal.addEventListener('mouseup', () => {
+      this.modal.removeEventListener('mousemove', this.handleMouseMove);
+    });
+
+    this.modal.addEventListener('touchstart', (e) => {
+      this.startX = e.touches[0].clientX;
+      this.modal.addEventListener('touchmove', this.handleTouchMove);
+    });
+
+    this.modal.addEventListener('touchend', () => {
+      this.modal.removeEventListener('touchmove', this.handleTouchMove);
+    });
+
     //bindings
     this.handleClickEvents = this.handleClickEvents.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
-
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
   }
 
   openModal() {
@@ -49,7 +71,7 @@ class Gallery {
     this.modal.querySelector('h2').textContent = el.title;
     this.modal.querySelector('p').textContent = el.dataset.description;
     this.currentImg = el;
-    console.log(el, this.currentImg);
+    // console.log(el, this.currentImg);
 
     if (!this.modal.classList.contains('open')) {
       this.openModal();
@@ -72,7 +94,7 @@ class Gallery {
   // handleEvents
 
   handleClickEvents(e) {
-    console.log(this);
+    // console.log(this);
     const { target } = e;
     switch (target) {
       case this.modal:
@@ -90,9 +112,9 @@ class Gallery {
   }
 
   handleKeyUp(e) {
-    console.log(this)
+    // console.log(this)
     const { key } = e;
-    console.log(key);
+    // console.log(key);
     switch (key) {
       case 'Escape':
         this.closeModal();
@@ -105,6 +127,31 @@ class Gallery {
         break;
       default:
         break;
+    }
+  }
+
+  handleMouseMove(e) {
+    this.currentX = e.pageX;
+    const diff = this.currentX - this.startX;
+    if (diff > 0 && diff > 50) {
+      this.showPrevImg();
+      this.startX = this.currentX;
+    } else if (diff < 0 && diff < -50) {
+      this.showNextImg();
+      this.startX = this.currentX;
+    }
+  }
+
+  handleTouchMove(e) {
+    // e.preventDefault();
+    this.currentX = e.touches[0].clientX;
+    const diff = this.currentX - this.startX;
+    if (diff > 0 && diff > 50) {
+      this.showPrevImg();
+      this.startX = this.currentX;
+    } else if (diff < 0 && diff < -50) {
+      this.showNextImg();
+      this.startX = this.currentX;
     }
   }
 }

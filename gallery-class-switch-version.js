@@ -1,6 +1,5 @@
-/*eslint-disable*/
 class Gallery {
-  constructor(gallery){
+  constructor(gallery) {
     this.gallery = gallery;
     if (!this.gallery) {
       throw new Error('There is no gallery!');
@@ -12,6 +11,7 @@ class Gallery {
     this.currentImg;
     this.startX;
     this.currentX;
+    this.hasChange = false;
 
     this.images.forEach((img) => {
       img.addEventListener('click', (e) => {
@@ -24,40 +24,66 @@ class Gallery {
       });
     });
 
-    this.modal.addEventListener('mousedown', (e) => {
-      this.startX = e.pageX;
-      this.modal.addEventListener('mousemove', this.handleMouseMove);
-    });
-
-    this.modal.addEventListener('mouseup', () => {
-      this.modal.removeEventListener('mousemove', this.handleMouseMove);
-    });
-
-    this.modal.addEventListener('touchstart', (e) => {
-      this.startX = e.touches[0].clientX;
-      this.modal.addEventListener('touchmove', this.handleTouchMove);
-    });
-
-    this.modal.addEventListener('touchend', () => {
-      this.modal.removeEventListener('touchmove', this.handleTouchMove);
-    });
-
-    //bindings
+    // bindings
     this.handleClickEvents = this.handleClickEvents.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
-    this.handleMouseMove = this.handleMouseMove.bind(this);
+    // this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleTouchMove = this.handleTouchMove.bind(this);
+    // this.mouseDownHandler = this.mouseDownHandler.bind(this);
+    // this.mouseUpHandler = this.mouseUpHandler.bind(this);
+    this.touchendHandler = this.touchendHandler.bind(this);
+    this.touchstartHandler = this.touchstartHandler.bind(this);
+  }
+
+  // mouseDownHandler(e) {
+  //   if (!e.target.matches('button')) {
+  //     console.log('mousedown');
+  //     this.startX = e.pageX;
+  //     window.addEventListener('mousemove', this.handleMouseMove);
+  //     window.addEventListener('mouseup', this.mouseUpHandler);
+  //   }
+  // }
+
+  // mouseUpHandler() {
+  //   console.log('mouseup');
+  //   window.removeEventListener('mousemove', this.handleMouseMove);
+  //   window.removeEventListener('mouseup', this.mouseUpHandler);
+  // }
+
+  touchstartHandler(e) {
+    if (!e.target.matches('button')) {
+      console.log('touchstart');
+      this.startX = e.touches[0].clientX;
+      console.log('this.startX', this.startX);
+      this.modal.addEventListener('touchmove', this.handleTouchMove);
+    }
+  }
+
+  touchendHandler() {
+    console.log('touchend');
+    this.hasChange = false;
+    this.modal.removeEventListener('touchmove', this.handleTouchMove);
   }
 
   openModal() {
+    console.log('openmodal');
     this.modal.classList.add('open');
     this.modal.addEventListener('click', this.handleClickEvents);
+    // this.modal.addEventListener('mousedown', this.mouseDownHandler);
+    // this.modal.addEventListener('mouseup', this.mouseUpHandler);
+    this.modal.addEventListener('touchstart', this.touchstartHandler);
+    this.modal.addEventListener('touchend', this.touchendHandler);
     window.addEventListener('keyup', this.handleKeyUp);
   }
 
   closeModal() {
+    console.log('closemodal');
     this.modal.classList.remove('open');
     this.modal.removeEventListener('click', this.handleClickEvents);
+    // this.modal.removeEventListener('mousedown', this.mouseDownHandler);
+    // this.modal.removeEventListener('click', this.mouseUpHandler);
+    this.modal.removeEventListener('touchstart', this.touchstartHandler);
+    this.modal.removeEventListener('touchend', this.touchendHandler);
     window.removeEventListener('keyup', this.handleKeyUp);
   }
 
@@ -77,12 +103,15 @@ class Gallery {
       this.openModal();
     }
   }
+
   showNextImg() {
     if (this.currentImg) {
-      const next = this.currentImg.nextElementSibling || this.gallery.firstElementChild;
+      const next =
+        this.currentImg.nextElementSibling || this.gallery.firstElementChild;
       this.showImage(next);
     }
   }
+
   showPrevImg() {
     if (this.currentImg) {
       const previous =
@@ -130,28 +159,35 @@ class Gallery {
     }
   }
 
-  handleMouseMove(e) {
-    this.currentX = e.pageX;
-    const diff = this.currentX - this.startX;
-    if (diff > 0 && diff > 50) {
-      this.showPrevImg();
-      this.startX = this.currentX;
-    } else if (diff < 0 && diff < -50) {
-      this.showNextImg();
-      this.startX = this.currentX;
-    }
-  }
+  // handleMouseMove(e) {
+  //   this.currentX = e.pageX;
+  //   const diff = this.currentX - this.startX;
+  //   if (diff > 0 && diff > 50) {
+  //     this.showPrevImg();
+  //     this.startX = this.currentX;
+  //   } else if (diff < 0 && diff < -50) {
+  //     this.showNextImg();
+  //     this.startX = this.currentX;
+  //   }
+  // }
 
   handleTouchMove(e) {
-    // e.preventDefault();
-    this.currentX = e.touches[0].clientX;
-    const diff = this.currentX - this.startX;
-    if (diff > 0 && diff > 50) {
-      this.showPrevImg();
-      this.startX = this.currentX;
-    } else if (diff < 0 && diff < -50) {
-      this.showNextImg();
-      this.startX = this.currentX;
+    if (!this.hasChange) {
+      // e.preventDefault();
+      console.log('touchmove');
+      this.currentX = e.touches[0].clientX;
+      const diff = this.currentX - this.startX;
+      if (diff > 50) {
+        this.showPrevImg();
+        this.hasChange = true;
+        console.log('currentX', this.currentX);
+        // this.startX = this.currentX;
+      } else if (diff < -50) {
+        this.showNextImg();
+        this.hasChange = true;
+        console.log('currentX', this.currentX);
+        // this.startX = this.currentX;
+      }
     }
   }
 }

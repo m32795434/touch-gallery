@@ -27,22 +27,22 @@ class Gallery {
     // bindings
     this.handleClickEvents = this.handleClickEvents.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
-    // this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleTouchMove = this.handleTouchMove.bind(this);
-    // this.mouseDownHandler = this.mouseDownHandler.bind(this);
+    this.mouseDownHandler = this.mouseDownHandler.bind(this);
     // this.mouseUpHandler = this.mouseUpHandler.bind(this);
     this.touchendHandler = this.touchendHandler.bind(this);
     this.touchstartHandler = this.touchstartHandler.bind(this);
   }
 
-  // mouseDownHandler(e) {
-  //   if (!e.target.matches('button')) {
-  //     console.log('mousedown');
-  //     this.startX = e.pageX;
-  //     window.addEventListener('mousemove', this.handleMouseMove);
-  //     window.addEventListener('mouseup', this.mouseUpHandler);
-  //   }
-  // }
+  mouseDownHandler(e) {
+    if (!e.target.matches('button') && !e.target.matches('.myModal')) {
+      console.log('mousedown');
+      this.startX = e.pageX;
+      window.addEventListener('mousemove', this.handleMouseMove);
+      // window.addEventListener('mouseup', this.mouseUpHandler);
+    }
+  }
 
   // mouseUpHandler() {
   //   console.log('mouseup');
@@ -51,10 +51,8 @@ class Gallery {
   // }
 
   touchstartHandler(e) {
-    if (!e.target.matches('button')) {
-      console.log('touchstart');
+    if (!e.target.matches('button') && !e.target.matches('.myModal')) {
       this.startX = e.touches[0].clientX;
-      console.log('this.startX', this.startX);
       this.modal.addEventListener('touchmove', this.handleTouchMove);
     }
   }
@@ -66,10 +64,9 @@ class Gallery {
   }
 
   openModal() {
-    console.log('openmodal');
     this.modal.classList.add('open');
     this.modal.addEventListener('click', this.handleClickEvents);
-    // this.modal.addEventListener('mousedown', this.mouseDownHandler);
+    this.modal.addEventListener('mousedown', this.mouseDownHandler);
     // this.modal.addEventListener('mouseup', this.mouseUpHandler);
     this.modal.addEventListener('touchstart', this.touchstartHandler);
     this.modal.addEventListener('touchend', this.touchendHandler);
@@ -77,10 +74,9 @@ class Gallery {
   }
 
   closeModal() {
-    console.log('closemodal');
     this.modal.classList.remove('open');
     this.modal.removeEventListener('click', this.handleClickEvents);
-    // this.modal.removeEventListener('mousedown', this.mouseDownHandler);
+    this.modal.removeEventListener('mousedown', this.mouseDownHandler);
     // this.modal.removeEventListener('click', this.mouseUpHandler);
     this.modal.removeEventListener('touchstart', this.touchstartHandler);
     this.modal.removeEventListener('touchend', this.touchendHandler);
@@ -97,7 +93,6 @@ class Gallery {
     this.modal.querySelector('h2').textContent = el.title;
     this.modal.querySelector('p').textContent = el.dataset.description;
     this.currentImg = el;
-    // console.log(el, this.currentImg);
 
     if (!this.modal.classList.contains('open')) {
       this.openModal();
@@ -123,7 +118,6 @@ class Gallery {
   // handleEvents
 
   handleClickEvents(e) {
-    // console.log(this);
     const { target } = e;
     switch (target) {
       case this.modal:
@@ -141,9 +135,7 @@ class Gallery {
   }
 
   handleKeyUp(e) {
-    // console.log(this)
     const { key } = e;
-    // console.log(key);
     switch (key) {
       case 'Escape':
         this.closeModal();
@@ -159,17 +151,24 @@ class Gallery {
     }
   }
 
-  // handleMouseMove(e) {
-  //   this.currentX = e.pageX;
-  //   const diff = this.currentX - this.startX;
-  //   if (diff > 0 && diff > 50) {
-  //     this.showPrevImg();
-  //     this.startX = this.currentX;
-  //   } else if (diff < 0 && diff < -50) {
-  //     this.showNextImg();
-  //     this.startX = this.currentX;
-  //   }
-  // }
+  handleMouseMove(e) {
+    // if (!this.hasChang) {
+    this.currentX = e.pageX;
+    console.log('this.currentX', this.currentX);
+    const diff = this.currentX - this.startX;
+    if (diff > 10) {
+      this.showPrevImg();
+      // this.hasChange = true;
+      window.removeEventListener('mousemove', this.handleMouseMove);
+      console.log('mousemove removed');
+    } else if (diff < -10) {
+      this.showNextImg();
+      // this.hasChange = true;
+      window.removeEventListener('mousemove', this.handleMouseMove);
+      console.log('mousemove removed');
+    }
+    // }
+  }
 
   handleTouchMove(e) {
     if (!this.hasChange) {

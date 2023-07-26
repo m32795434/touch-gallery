@@ -36,7 +36,7 @@ class Gallery {
   }
 
   mouseDownHandler(e) {
-    if (!e.target.matches('button') && !e.target.matches('.myModal')) {
+    if (e.target.matches('img')) {
       console.log('mousedown');
       this.startX = e.pageX;
       window.addEventListener('mousemove', this.handleMouseMove);
@@ -51,7 +51,7 @@ class Gallery {
   // }
 
   touchstartHandler(e) {
-    if (!e.target.matches('button') && !e.target.matches('.myModal')) {
+    if (e.target.matches('img')) {
       this.startX = e.touches[0].clientX;
       this.modal.addEventListener('touchmove', this.handleTouchMove);
     }
@@ -91,7 +91,7 @@ class Gallery {
     // show iamge / update modal
     this.modal.querySelector('img').src = el.src;
     this.modal.querySelector('h2').textContent = el.title;
-    this.modal.querySelector('p').textContent = el.dataset.description;
+    this.modal.querySelector('p').innerHTML = el.dataset.description;
     this.currentImg = el;
 
     if (!this.modal.classList.contains('open')) {

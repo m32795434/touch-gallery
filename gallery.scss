@@ -22,6 +22,7 @@
     object-fit: cover;
     border: 1px solid black;
   }
+
 }
 
 .myModal {
@@ -65,7 +66,6 @@
 
 
       & img {
-
         // pointer-events: none;
         height: auto;
         width: 100%;
@@ -74,13 +74,27 @@
         &::selection {
           background-color: transparent;
         }
+
+        &:active {
+          cursor: grabbing;
+        }
+
       }
 
       & figcaption {
         padding: 10px;
 
-        & h2 {
+        &h2 {
           color: black;
+        }
+
+        &p {
+          position: relative;
+          z-index: 3;
+
+          &a {
+            color: black;
+          }
         }
       }
     }
